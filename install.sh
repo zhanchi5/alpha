@@ -102,6 +102,11 @@ echo -e "${GRE}Restarting servers ... ${NCC}"
 systemctl start apache2
 systemctl restart nginx
 #------------------------------------------------------------------------------------------------------------
+echo -e "${GRE}Installing python dependences ...${NCC}"
+sudo apt install -y python2.7
+sudo apt install -y python-pip
+sudo pip install dpkt
+#------------------------------------------------------------------------------------------------------------
 # Restart scripts to collect inforamation from setup
 echo -e "${GRE}Restarting scripts ... ${NCC}"
 sudo $SCRIPTS_DIR/iostat.sh $SCRIPTS_DIR/data/print_iostat 
@@ -114,6 +119,6 @@ sudo python $SCRIPTS_DIR/dpkt_test.py
 sudo cp -f $SCRIPTS_DIR/print_toptlk.txt $SCRIPTS_DIR/data/print_toptlk.txt #$SCRIPTS_DIR/data/print_toptlk &
 #------------------------------------------------------------------------------------------------------------
 netstat -nlpt
-echo -e "${GRE}END OF SCRIPT${NCC}\n"
+echo -e "${GRE}Installation complete${NCC}\n"
 #------------------------------------------------------------------------------------------------------------
 exit 0
