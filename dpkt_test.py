@@ -7,10 +7,11 @@ import sys
 import datetime
 from operator import itemgetter
 
-f1 = open('print_toptlk.txt','w')
+f1 = open('print_toptlk.txt','w+r')
+f2 = open('temp.txt','w+r')
 
 subprocess.check_call(
-    ['sudo tcpdump -tnn -c 100 -w packets.pcap -i enp0s3'], shell=True)
+    ['sudo tcpdump -tnn -c 100 -w packets.pcap -i wlan0'], shell=True)
 
 f = open('packets.pcap')
 pcap = dpkt.pcap.Reader(f)
@@ -63,7 +64,7 @@ for packet in packets:
 number_sort = sorted(ip_packets, key=itemgetter('Amount'), reverse=True)
 size_sort = sorted(ip_packets, key=itemgetter('Size'), reverse=True)
 proto_sort = sorted(proto_packets, key=itemgetter('Size'), reverse=True)
-print ("These are the top talking IP addresses sorted by amount of packets :")
+print ("PROCESSING: top talking IP addresses sorted by amount of packets")
 #-----------------------------------table No1-------------------- 
 f1.write('<table border="1">')
 f1.write('<tr>')
@@ -71,7 +72,7 @@ f1.write("<th colspan=2>\nThese are the top talking IP addresses sorted by amoun
 f1.write('</tr>')
 for packet in number_sort:
     f1.write("<tr>") 
-    print (packet['IP_Src'], "  ", packet['Amount'])   
+    #print (packet['IP_Src'], "  ", packet['Amount'])   
     f1.write("\n")
     f1.write("<td>	\n" + str(packet['IP_Src']) + "</td>")
     f1.write("		")
@@ -79,13 +80,13 @@ for packet in number_sort:
     f1.write("</tr>")
 
 #-------------------------------table No2------------------------
-print ("These are the top talking IP addresses sorted by total bytes size :")
+print ("PROCESSING: top talking IP addresses sorted by total bytes size ")
 f1.write('<tr>')
 f1.write("<th colspan=2>\nThese are the top talking IP addresses sorted by total bytes size :</th>")
 f1.write("</tr>")
 for packet in size_sort:
     f1.write("<tr>")
-    print (packet['IP_Src'], "  ", packet['Size'])
+    #print (packet['IP_Src'], "  ", packet['Size'])
     f1.write("\n")
     f1.write("<td>	\n" + str(packet['IP_Src']) + "</td>")
     f1.write("	")
@@ -93,21 +94,22 @@ for packet in size_sort:
     f1.write("</tr>")
 
 #-------------------------------table No3------------------------------
-print ("These are the top used Protocols sorted by percentage of traffic :")
+print ("PROCESSING: top used Protocols sorted by percentage of traffic")
 f1.write("<tr>")
 f1.write("<th colspan=2>These are the top used Protocols sorted by percentage of traffic :</th>")
 f1.write("</tr>")
 for packet in proto_sort:
     f1.write("<tr>") 
-    print (packet['Proto'], "  ", int((float(packet['Size']) / total_buf) * 100), '%')
+    #print (packet['Proto'], "  ", int((float(packet['Size']) / total_buf) * 100), '%')
     f1.write("\n")
     f1.write("<td>	\n")
-    f1.write(str(packet['Proto']))  
+    f2.write(str(packet['Proto']))
+    f1.write(str(subprocess.check_call(["sudo sed -n 's/[<>]//g' temp.txt"],shell=True)))  
     f1.write("</td>")
     f1.write("	")
     f1.write("<td>	\n"+ str((int((float(packet['Size']) / total_buf)*100))) + "%"+"</td>")
     f1.write("</tr>")
-
+    	
 # What is the average packet rate? (packets/second)
 # The last time stamp
 # print "The packets/second %f " % (packets/(last-first))
