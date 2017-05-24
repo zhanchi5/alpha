@@ -10,8 +10,10 @@ from operator import itemgetter
 f1 = open('print_toptlk.txt','w+r')
 f2 = open('temp.txt','w+r')
 
+
+
 subprocess.check_call(
-    ['sudo tcpdump -tnn -c 100 -w packets.pcap -i wlan0'], shell=True)
+    ['RESULT=$(ip r l | grep default | cut -d " " -f 5) && sudo tcpdump -tnn -c 30 -w packets.pcap -i $RESULT'], shell=True)
 
 f = open('packets.pcap')
 pcap = dpkt.pcap.Reader(f)
